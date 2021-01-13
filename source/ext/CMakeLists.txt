@@ -1,0 +1,5 @@
+add_subdirectory( base64 )
+add_subdirectory( inih )
+add_subdirectory( jread )
+add_subdirectory( jwrite )
+add_subdirectory( uri_encode )
