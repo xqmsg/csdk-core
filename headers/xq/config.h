@@ -88,12 +88,12 @@ char* xq_strcat( char* tail, char* src, int maxBuf );
 /// Set the access token for the provided configuration.
 /// @param config The XQ configuration object
 /// @param token The access token.
-_Bool set_access_token(struct xq_config* config, const char* token );
+_Bool xq_set_access_token(struct xq_config* config, const char* token );
 
 
 /// Fetches the value of the current access token for the provided configuration object.
 /// @param config The XQ configuration object.
-const char* get_current_access_token(struct xq_config* config) ;
+const char* xq_get_access_token(struct xq_config* config) ;
 
 
 /// Set the exchange token for the provided configuration object.

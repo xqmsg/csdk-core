@@ -25,7 +25,7 @@ _Bool xq_svc_exchange(struct xq_config* config, struct xq_error_info* error ){
     }
     
     // Clear the current access token. This will deallocate any previously allocated token.
-    set_access_token(config, 0);
+    xq_set_access_token(config, 0);
     
     // Set the access token to the current exchange token without a duplicate allocation.
     config->access_token = config->exchange_token;
@@ -41,7 +41,7 @@ _Bool xq_svc_exchange(struct xq_config* config, struct xq_error_info* error ){
     if ( response.success ) {
         
         //  Store the new access token.
-        set_access_token( config, (const char*) response.content );
+        xq_set_access_token( config, (const char*) response.content );
         
         // We've used up the exchange token, so clear it from memory..
         set_exchange_token(config, 0 , 0);

@@ -32,11 +32,6 @@ include_directories(
 /usr/local/include
 )
 
-# Setup apple-specific include paths.
-if( APPLE )
-include_directories(/usr/local/Cellar/openssl@1.1/1.1.1g/include)
-endif()
-
 #add_executable(ibc ${PROJECT_SOURCE_DIR}/Source/main.cpp)
 
 message(STATUS "Source Directory = ${PROJECT_SOURCE_DIR}")

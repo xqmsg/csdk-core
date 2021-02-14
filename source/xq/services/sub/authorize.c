@@ -85,7 +85,7 @@ _Bool xq_svc_deauthorize(struct xq_config* config, struct xq_error_info* error )
     if (response.success) {
         // Since the access token is no longer valid, remove it from the configuration
         // object completely.
-        set_access_token(config, 0);
+        xq_set_access_token(config, 0);
     }
     
     else if (error) {

@@ -29,7 +29,7 @@ _Bool xq_svc_authorize_alias(struct xq_config* config, const char* email, struct
     // Ensure the authorization JSON was written properly.
     if ( response.success) {
         // Automatically store the exchange token in the configuration object.
-        set_access_token( config, (const char*) response.content );
+        xq_set_access_token( config, (const char*) response.content );
     }
     else if (error) {
         xq_fill_error(&response, error);
