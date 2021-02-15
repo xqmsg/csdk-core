@@ -1,4 +1,6 @@
-**XQ C Library **
+# XQ C SDK
+
+[![version](https://img.shields.io/badge/version-0.1-green.svg)](https://semver.org)
 
 This is the XQ SDK for native applications and embedded devices.
 
