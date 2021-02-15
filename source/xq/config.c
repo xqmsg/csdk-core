@@ -48,31 +48,36 @@ char* xq_strcat( char* tail, char* src, int max_buf )
 
 _Bool xq_set_access_token(struct xq_config* config, const char* token ) {
 
-    if (!config) return 0;
-    if (config->access_token) free(config->access_token );
+    if (!config)  return 0;
+    
+    if (config->access_token) {
+        free(config->access_token );
+        config->access_token = 0;
+    }
+    
     if (token) {
         config->access_token = calloc(strlen(token) + strlen(BEARER_TAG) + 1, 1 );
         xq_strcat(xq_strcat(config->access_token, BEARER_TAG, 0 ), (char*)token, 0 );
     }
-    else {
-        config->access_token = 0;
-    }
+    
     return 1;
 }
 
 _Bool set_exchange_token(struct xq_config* config, const char* token, int len ) {
     
     if (!config) return 0;
-    if (config->exchange_token) free(config->exchange_token );
+    
+    if (config->exchange_token) {
+        free(config->exchange_token );
+        config->exchange_token = 0;
+    }
     
     if (token) {
         if (len == 0 ) len = (int) strlen(token);
         config->exchange_token = calloc( len + BEARER_TAG_LEN, 1  );
         xq_strcat( xq_strcat(config->exchange_token, BEARER_TAG, BEARER_TAG_LEN ) , (char*) token, len );
     }
-    else {
-        config->exchange_token = 0;
-    }
+
     return 1;
 }
 
