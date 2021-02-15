@@ -25,9 +25,13 @@ _Bool xq_svc_code_validation(struct xq_config* config, const char* pin, struct x
     }
     
     if (strlen(pin) == 0) {
-        printf("FSD:OIfnmvdsf;oighns [dmndfg\n\n");
+        if (error) {
+            xq_strcat(error->content, "No PIN provided." , MAX_ERROR_LENGTH);
+            error->responseCode = -1;
+        }
         return 0;
     }
+    
     // Write the email into a json payload.
     char params[MAX_URL_LENGTH] = {0};
     
@@ -40,8 +44,6 @@ _Bool xq_svc_code_validation(struct xq_config* config, const char* pin, struct x
     config->access_token = config->exchange_token;
     
     // Make the API call.
-    //printf("\n\nMAKING CODE VAL API CALL...%s.\nProvided Pin=%s\n" , params,pin );
-    
     struct xq_response response = xq_call( config, Server_Sub, CallMethod_Get, "codevalidation", params , 1, 0 );
     
     // Restore the old access token ( whatever it was ).

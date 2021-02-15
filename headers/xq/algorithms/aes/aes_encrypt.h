@@ -5,9 +5,9 @@
 //  Created by Ike E on 10/19/20.
 //
 
-#ifndef Header_h
-#define Header_h
-
+#ifndef aes_encrypt_h
+#define aes_encrypt_h
+#define AES_PADDING 16
 
 /// Encrypts the provided data using the specified AES algorithm.  At the moment, this must be either Algorithm_AES (allowing intercompatibility with other XQ products),
 ///  or Algorithm_AES_Stong ( no intercompatibility currently, but using the more secure SHA-2 for key hashing ).
@@ -23,4 +23,4 @@ _Bool xq_aes_encrypt(
                         struct xq_message_payload* result,
                         struct xq_error_info* error   );
 
-#endif /* Header_h */
+#endif /* aes_encrypt_h */

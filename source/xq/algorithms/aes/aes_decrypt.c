@@ -13,27 +13,39 @@
 #include <openssl/evp.h>
 #include <openssl/aes.h>
 #include <openssl/sha.h>
+#include <openssl/err.h>
 #include <xq/config.h>
 #include <xq/services/quantum/quantum.h>
 #include <xq/services/crypto.h>
 #include <xq/algorithms/aes/aes_encrypt.h>
 
 
-/*
- * Decrypt *len bytes of ciphertext
- */
+
 static inline unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, size_t *len)
 {
     /* plaintext will always be equal to or lesser than length of ciphertext*/
-    int p_len =(int) *len, f_len = 0;
-    unsigned char *plaintext = malloc(p_len);
+    int p_len = 0, f_len = 0;
+    unsigned char *plaintext = malloc(*len);
+    EVP_CIPHER_CTX_set_padding(e, AES_PADDING);
+    if (!EVP_DecryptUpdate(e, plaintext, &p_len, ciphertext, (int) *len )) {
+        ERR_print_errors_fp(stderr);
+        *len = 0;
+        free(plaintext);
+        return 0;
+    }
     
-    EVP_DecryptUpdate(e, plaintext, &p_len, ciphertext, (int) *len );
-    EVP_DecryptFinal_ex(e, plaintext+p_len, &f_len);
+
+    if (AES_PADDING > 0 && !EVP_DecryptFinal_ex(e, plaintext+p_len, &f_len)) {
+        ERR_print_errors_fp(stderr);
+        *len = 0;
+        free(plaintext);
+        return 0;
+    }
     
     *len = p_len + f_len;
     return plaintext;
 }
+
 
 _Bool xq_aes_decrypt(
                      uint8_t* data, size_t data_len,
@@ -57,30 +69,20 @@ _Bool xq_aes_decrypt(
     _Bool compat = (key[0] == '.' && key[1] == 'A' );
     if (key[0] == '.') key += 2;
     
-    //printf("Decrypting AES %s with key %s\n\n", compat ? "Compat":"Strong" , key);
-
     int key_data_len = (int)strlen(key);
     size_t len =  data_len;
-    
-#ifdef WITH_GENERIC_SALT
-
     
     _Bool salted = strncmp( "Salted__", (char*)data, 8) == 0 ;
 
     if (salted) {
-        //printf("Salted AES...\n");
         needle += 16;
         len -= 16;
         memccpy(salt, data + 8, '\0', 8 );
     }
     else {
-        //printf("Unsalted AES...\n");
         char prefix[8] = {0};
         memcpy(prefix, (char*)data, 8);
-        //printf("Prefix: %s\n\n", prefix);
     }
-    
-#endif
 
     int i;
     unsigned char gen_key[32]={0}, gen_iv[32]={0};
@@ -99,19 +101,18 @@ _Bool xq_aes_decrypt(
     }
     
     int gen_key_len = (int)strlen((char*)gen_key);
-    //printf("Key Len:%i\n", (int)gen_key_len );
     int iv_len = (int)strlen((char*)gen_iv);
-    //printf("IV Len: %i\n" , iv_len);
-    //printf("Gen IV  (first,last):%i, %i\n", gen_iv[0], gen_iv[iv_len-1] );
-    //printf("Gen Key (first,last):%i, %i\n", gen_key[0], gen_key[31] );
-    //printf("Gen Key: %s\n", (char*)gen_key);
-    //printf("Gen IV: %s\n", (char*)gen_iv);
 
+    if (EVP_DecryptInit_ex(de, EVP_aes_256_cbc(), NULL, gen_key, gen_iv)){
+        result->data = (uint8_t *)aes_decrypt(de, needle, &len );
+        result->length = (int) len - AES_PADDING;
+    }
+    else {
+        ERR_print_errors_fp(stderr);
+    }
     
-    EVP_DecryptInit_ex(de, EVP_aes_256_cbc(), NULL, gen_key, gen_iv);
-    result->data = (uint8_t *)aes_decrypt(de, needle, &len );
-    result->length = (int) len;
     EVP_CIPHER_CTX_free(de);
+   
     
     if (len <= 0 ) {
         fprintf(stderr, "[ERROR] AES decrypted yielded an empty string.\n");

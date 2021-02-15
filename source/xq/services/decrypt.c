@@ -28,7 +28,6 @@ _Bool xq_decrypt_with_token( struct xq_config* config, enum algorithm_type algor
     _Bool success = xq_svc_get_key(config, token, &key, error);
     
     if ( !success ) {
-        printf("Failed to get key.\n");
         return 0;
     }
     
@@ -43,8 +42,6 @@ _Bool xq_decrypt_with_key( struct xq_config* config, enum algorithm_type algorit
     
    
     if (algorithm == Algorithm_Autodetect) {
-        
-        printf("Attempting to autodetect algorithm...\n");
         
         // If the first character is a period, the next should indicate the algorithm type.
         if (key[0] == '.' ) {
@@ -66,7 +63,8 @@ _Bool xq_decrypt_with_key( struct xq_config* config, enum algorithm_type algorit
         }
         break;
             
-        case Algorithm_AES: {
+        case Algorithm_AES:
+        case Algorithm_AES_Strong:{
             success = xq_aes_decrypt(data, data_len, key, result, error);
         }
         break;

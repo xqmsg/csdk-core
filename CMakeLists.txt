@@ -7,6 +7,9 @@ set(CMAKE_CXX_COMPILER /usr/bin/g++)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_OSX_ARCHITECTURES x86_64)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version" FORCE)
+set(OPENSSL_ROOT_DIR ${OPENSSL_ROOT_DIR} /usr/local/Cellar/openssl@1.1/1.1.1i/)
+set(OPENSSL_CRYPTO_LIBRARY ${OPENSSL_ROOT_DIR}/lib/libcrypto.dylib CACHE FILEPATH "" FORCE)
+set(OPENSSL_SSL_LIBRARY ${OPENSSL_ROOT_DIR}/lib/libssl.dylib CACHE FILEPATH "" FORCE)
 endif()
 
 # Set the project name.
@@ -73,4 +76,25 @@ endforeach()
 
 add_subdirectory( ${PROJECT_SOURCE_DIR}/source/ext )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/source/xq )
+
+add_executable( test )
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+if( UNIX AND NOT APPLE )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lcurl")
+set(PLATFORM_SPECIFIC_LIBS "curl -lpthread")
+else()
+set(PLATFORM_SPECIFIC_LIBS "CURL")
+endif()
+
+
+set_target_properties(test PROPERTIES EXCLUDE_FROM_ALL TRUE)
+target_sources( test PRIVATE ${PROJECT_SOURCE_DIR}/test/test.c  ${PROJECT_SOURCE_DIR}/config/xq.ini   )
+set(GROUP "Source Files")
+source_group("Source Files" FILES  ${PROJECT_SOURCE_DIR}/test/test.c )
+set(GROUP "Header Files")
+set(GROUP "Config")
+source_group("Config" FILES ${PROJECT_SOURCE_DIR}/config/xq.ini )
+target_link_libraries( test xqc  OpenSSL::SSL ${PLATFORM_SPECIFIC_LIBS} )
+file(COPY ${PROJECT_SOURCE_DIR}/config/xq.ini DESTINATION  ${CMAKE_BINARY_DIR}/bin )
 

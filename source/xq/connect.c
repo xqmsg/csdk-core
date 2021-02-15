@@ -12,8 +12,6 @@
 #include <xq/config.h>
 #include <xq/connect.h>
 
-//#define ENABLE_CURL_DEBUG
-
 /////// START DMUP
 
 #ifdef ENABLE_CURL_DEBUG

@@ -38,13 +38,7 @@ _Bool xq_svc_authorize(struct xq_config* config, const char* email_or_phone, str
 #endif
     jwClose(&jwc);
     
-    printf("\nAuthorization request: %s\n\n", buf);
-    
     struct xq_response response = xq_call( config, Server_Sub, CallMethod_Post, "authorize", buf , 1,  0 );
-    
-    // Automatically store the exchange token in the configuration object.
-    printf("\n\nAuthorization Response: %s\n\n", (char*)response.content );
-    
     
     // Ensure the authorization JSON was written properly.
     if ( response.success ) {

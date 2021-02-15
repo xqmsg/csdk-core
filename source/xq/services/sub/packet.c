@@ -62,9 +62,7 @@ _Bool xq_svc_store_key(
 
     // If something went wrong...
     if (!sub_response.success) {
-        printf("Provided key: %s\nReported Length: %i\n", request->key, request->key_len );
-        
-        printf("Json: %s\n\n", buf);
+
         if (error) {
             xq_fill_error(&sub_response, error);
         }
@@ -78,7 +76,6 @@ _Bool xq_svc_store_key(
     // If there were no issues, we should have a new encrypted packet. Send the packet to the validation server.
     struct xq_response response = xq_call( config, Server_Val, CallMethod_Post, "packet", (char*) sub_response.content , 1,  0 );
     
-   // printf("Step 2 store key response (token) => %s\n", response.content );
     
     xq_destroy_response(&sub_response);
     
@@ -157,8 +154,6 @@ _Bool xq_svc_get_key(
     
     if (response.success) {
         
-        //printf("Got Key Response => %s\n\n" , response.content );
-        
         if ( result->data != 0 && result->length == 0 ) {
             result->length = (int) response.size;
             memcpy(result->data, response.content, response.size);
@@ -181,7 +176,6 @@ _Bool xq_svc_get_key(
     }
     
     else if (error) {
-        printf("xq_call remote request failed.\nRequest URL sent: %s\n\n", serviceUrl );
         xq_fill_error(&response, error);
     }
     

@@ -19,6 +19,8 @@ This is the XQ SDK for native applications and embedded devices.
 - cmake: `brew install cmake`
 - OpenSSL 1.1: `brew install openssl@1.1`
 
+	In order to run tests, macOS users may also need to update the OpenSSL path in the `CMakeList.txt` file (currently set `1.1.1i` ) to match their installed version.
+
 2. You will need to add your XQ API key to the `xq.ini` file in the `config` folder. [Visit your dashboard](https://manage.xqmsg.com) to generate new keys.
 3. Build the XQ library itself:
 
@@ -26,6 +28,14 @@ This is the XQ SDK for native applications and embedded devices.
 mkdir build
 cd build
 cmake .. && make
+```
+
+4. Build the tests if desired. 
+
+```shell
+make test
+cd bin
+./test
 ```
 
 ## Basic Usage

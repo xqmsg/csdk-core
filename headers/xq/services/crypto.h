@@ -8,9 +8,8 @@
 #ifndef encrypt_h
 #define encrypt_h
 
-#define STRONG_HASH EVP_sha1
-#define AES_ROUNDS 1
-#define WITH_GENERIC_SALT 1
+#define STRONG_HASH EVP_sha512
+#define AES_ROUNDS 100000
 
 enum algorithm_type {
     /// This should only be used during a decryption phase. Automatically decide which algorithm to used based on its key prefix.
