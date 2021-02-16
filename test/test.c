@@ -60,6 +60,33 @@ _Bool testEncryption(struct xq_config *cfg, const char* recipients, const char* 
     // Success. The message has been successfully encrypted.
     printf( "-- Decrypted:%s\n", decrypted.data );
     
+    // Attempt grant another user accesss
+    const char *alt_recipients[] = {"fake_user@email.com"};
+    
+    if ( !xq_svc_grant_access(cfg, result.token_or_key, alt_recipients,1, &err)) {
+        fprintf(stderr, "[xq_svc_grant_access] %li: %s\n", err.responseCode, err.content );
+        xq_destroy_payload(&result);
+        return 0;
+    }
+    printf("-- Granted alternate user access.\n");
+    
+    // Revoke the new users access.
+    if ( !xq_svc_revoke_access(cfg, result.token_or_key, alt_recipients,1, &err)) {
+        fprintf(stderr, "[xq_svc_revoke_access] %li: %s\n", err.responseCode, err.content );
+        xq_destroy_payload(&result);
+        return 0;
+    }
+    printf("-- Revoked alternate user access.\n");
+        
+    
+    // Revoke the entire message.
+    if ( !xq_svc_remove_key(cfg, result.token_or_key, &err)) {
+        fprintf(stderr, "[xq_svc_remove_key] %li: %s\n", err.responseCode, err.content );
+        xq_destroy_payload(&result);
+        return 0;
+    }
+    printf("-- Revoked key.\n");
+    
     xq_destroy_payload(&decrypted);
     xq_destroy_payload(&result);
     return 1;

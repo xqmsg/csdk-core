@@ -59,6 +59,7 @@ _Bool xq_svc_store_key(
     
     struct xq_response sub_response = xq_call( config, Server_Sub, CallMethod_Post, "packet", buf , 1,  0 );
     
+    free(buf);
 
     // If something went wrong...
     if (!sub_response.success) {
@@ -69,9 +70,6 @@ _Bool xq_svc_store_key(
         xq_destroy_response(&sub_response);
         return 0;
     }
-    
-    free(buf);
-    
     
     // If there were no issues, we should have a new encrypted packet. Send the packet to the validation server.
     struct xq_response response = xq_call( config, Server_Val, CallMethod_Post, "packet", (char*) sub_response.content , 1,  0 );

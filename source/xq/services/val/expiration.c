@@ -49,7 +49,6 @@ _Bool xq_svc_check_expiration(
         return 0;
     }
     
-    // Write the email into a json payload.
     char serviceUrl[MAX_URL_LENGTH] = {0};
     
     // Create the escaped token.

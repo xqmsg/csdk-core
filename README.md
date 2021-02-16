@@ -4,7 +4,7 @@
 
 This is the XQ SDK for native applications and embedded devices.
 
-## Installation
+## 1. Installation
 
 1.  Install Prerequisites (Certain distros will have some of these installed already):
    **Linux**
@@ -38,9 +38,9 @@ cd bin
 ./test
 ```
 
-## Basic Usage
+## 2. Basic Usage
 
-### 1. SDK Initialization
+### SDK Initialization
 
 The SDK must be initialized with a valid configuration before it can be used. A basic `xq.ini` configuration file is provided in the `config` folder. You will need to add your XQ API key to this file. [Visit your dashboard](https://manage.xqmsg.com) to generate new keys.
 
@@ -59,7 +59,7 @@ if (!xq_is_valid_config(&cfg) ) {
 xq_destroy_config(&cfg);
 ```
 
-### 2. Creating a Quantum Entropy Pool
+### Creating a Quantum Entropy Pool
 
 A user can optionally create a quantum pool in order to improve performance. When a quantum pool is available, entropy will be pulled from that pool each time data is encrypted instead of needing to make a server request. The pool will be automatically replenished when necessary.
 
@@ -78,7 +78,7 @@ if (!xq_init_pool(&cfg, 2048, &pool, &err) ) {
 // Success - Pool is ready for use.
 ```
 
-### 3. Destroying a Quantum Entropy Pool
+### Destroying a Quantum Entropy Pool
 
 Entropy pools should always be destroyed when they are no longer of use.
 
@@ -86,7 +86,7 @@ Entropy pools should always be destroyed when they are no longer of use.
 	xq_destroy_pool(&pool);
 ```
 
-### 4. Authenticating a User 
+### Authenticating a User 
 
 Before data can be encrypted or decrypted, a user must be have a valid access token. 
 
@@ -130,7 +130,7 @@ if ( !xq_svc_code_validation( &cfg, pin , &err ) ) {
 ```
 
 
-### 5. Viewing your Access Token
+### Viewing your Access Token
 An access token can be stored and reused for as long as it is valid. If this is done, ensure that it is stored in a manner that only authorized users have access to it.
 ```c
 
@@ -148,7 +148,7 @@ if (!xq_set_access_token(&cfg, access_token)){
 ```
 
 
-### 6. Encrypting a Message
+### Encrypting a Message
 
 The most straightforward way to encrypt a mesage is by using the `xq_encrypt_and_store_token` method:
 
@@ -190,7 +190,7 @@ xq_destroy_payload(&encoded);
 xq_destroy_payload(&result);
 ```
 
-### 7. Decrypting a Message
+### Decrypting a Message
 Encrypted data can be decrypted via `xq_decrypt_with_token`:
 
 ```c
@@ -219,8 +219,41 @@ fprintf(stdout, "Decrypted Length:%i\n", decrypted.length );
 xq_destroy_payload(&decrypted);
 ```
 
-### 8. Revoking a Message
-All valid messages can be revoked, provided that you are the original sender, and you have a valid token:
+### Granting and Revoking User Access
+
+There may be cases where a user needs to grant or revoke access to a previously sent message. This can be achieved via `xq_svc_grant_access` and xq_svc_revoke_access respectively:
+
+```c
+
+// The existing message token.
+char* token = "MY_MESSAGE_TOKEN";
+
+// Add Jim and Joe to the recipient list.
+const char *emailsToAdd[] = {"jim@email.com","joe@email.com" };
+
+// Grant access to jim@email.com. This will only work if the currently
+// active profile is the same one that sent the original message.
+
+if ( !xq_svc_grant_access(cfg, token, emailsToAdd, 2, &err)) {
+        fprintf(stderr, "%li: %s\n", err.responseCode, err.content );
+        exit(EXIT_FAILURE);
+    }
+
+// Success - Jim and Joe will now be able to read the original message.
+
+// Revoke access for Joe alone.
+const char* emailsToRemove = { "joe@email.com" };
+
+if ( !xq_svc_revoke_access(cfg, token, emailsToRemove, 1, &err)) {
+  fprintf(stderr, "%li: %s\n", err.responseCode, err.content );
+  exit(EXIT_FAILURE);
+}
+
+// Success - Joe's access to this message has been revoked.
+```
+
+### Revoking a Message
+Access to an entire message can also be revoked. When this occurs, both the sender and all the recipients will lose all access to it. **Note that this action is not reversible**:
 
 ```c
 

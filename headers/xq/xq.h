@@ -34,5 +34,6 @@
 #include <xq/services/sub/delegate.h>
 #include <xq/services/sub/packet.h>
 #include <xq/services/val/expiration.h>
+#include <xq/services/val/key_access.h>
 
 #endif /* xq_h */
