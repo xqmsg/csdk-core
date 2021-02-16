@@ -181,9 +181,9 @@ if (!xq_encrypt_and_store_token(
 struct xq_message_payload encoded = { 0, 0 };
 xq_base64_payload(&result, &encoded);
 // Display the encrypted message.
-fprintf(stdout, "Encrypted Message ( Base64 ):%s\n", encoded.data );
+printf("Encrypted Message ( Base64 ):%s\n", encoded.data );
 // Display the XQ locator token. 
-fprintf(stdout, "Token: %s\n", result.token_or_key);
+printf("Token: %s\n", result.token_or_key);
 
 // Cleanup
 xq_destroy_payload(&encoded);
@@ -214,8 +214,8 @@ if (!xq_decrypt_with_token(
 }
 
 // Success - The message has been successfully encrypted.
-fprintf(stdout, "Decrypted Message:%s\n", decrypted.data );
-fprintf(stdout, "Decrypted Length:%i\n", decrypted.length );
+printf("Decrypted Message:%s\n", decrypted.data );
+printf("Decrypted Length:%i\n", decrypted.length );
 xq_destroy_payload(&decrypted);
 ```
 
