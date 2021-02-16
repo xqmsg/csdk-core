@@ -25,6 +25,8 @@ enum algorithm_type {
 };
 
 
+
+
 /// Check whether an integer is a valid algorithm type or not.
 /// @param algo The integer to check.
 static inline _Bool is_valid_algorithm(int algo) {
@@ -103,6 +105,7 @@ _Bool xq_encrypt(   struct xq_config* config,
 /// @param recipients_len The number of recipients.
 /// @param hours_to_expiration The number of hours before this message should expire.
 /// @param delete_on_read Should this message be deleted after it is read?
+/// @param metadata Optional metadata related to the content being encrypted. File and Email metadata will be viewable as communications on the users dashboard.
 /// @param result The user-provided result instance. The data storage may be preallocated. Otherwise, it will be allocated automatically ( the user must manually clean up after usage).
 /// @param error An optional, user-provided block  to store details of any error that occurs.
 _Bool xq_encrypt_and_store_token(
@@ -114,6 +117,7 @@ _Bool xq_encrypt_and_store_token(
                                  const char* recipients,
                                  int hours_to_expiration,
                                  _Bool delete_on_read,
+                                 struct xq_metadata* metadata,
                                  struct xq_message_payload* result,
                                  struct xq_error_info* error   );
 

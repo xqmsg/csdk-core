@@ -15,6 +15,8 @@ _Bool testEncryption(struct xq_config *cfg, const char* recipients, const char* 
     
     struct xq_message_payload result = { 0,0 };
     struct xq_error_info err = {0};
+    const char* meta_content = "{\"subject\":\"My C SDK Test Message\"}";
+    struct xq_metadata meta = xq_use_metadata( Metadata_Email, meta_content );
     
     if (!xq_encrypt_and_store_token(
                                     cfg, // XQ Configuration object
@@ -26,6 +28,7 @@ _Bool testEncryption(struct xq_config *cfg, const char* recipients, const char* 
                                     recipients, // The accounts that will be able to read this message.
                                     24, // The number of hours this message will be available
                                     0, // Prevent this message from being read more than once?
+                                    &meta,
                                     &result,
                                     &err)) {
         fprintf(stderr, "[xq_encrypt_and_store_token] %li: %s\n", err.responseCode, err.content );

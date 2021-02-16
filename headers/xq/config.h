@@ -75,6 +75,26 @@ struct xq_config
     char* exchange_token;
 };
 
+/// The different types of supported metadata. This affects the data that will be logged to the XQ dashboard.
+enum metadata_type {
+    /// Generic metadata. This will not be logged as a communication in the dashboard.
+    Metadata_Generic = 0,
+    /// File metadata
+    Metadata_File = 1,
+    /// Email metadata.
+    Metadata_Email = 2,
+};
+
+/// A data structure containing metadata about the key packet that will be available on the users XQ dashboard.
+struct xq_metadata {
+    /// The metadata type. 1 = File, 2 = Email, 0 = Generic / Other
+    enum metadata_type type;
+    /// The total length of the metadata.
+    int length;
+    /// The stringified JSON metada object.
+    char* data;
+};
+
 
 
 /// Appends one string to the tail end  of another. The user is responsible for ensuring that the target string has enough memory allocated

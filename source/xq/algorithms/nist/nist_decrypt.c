@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <xq/config.h>
 #include <xq/services/quantum/quantum.h>
+#include <xq/services/sub/packet.h>
 #include <xq/services/crypto.h>
 #include <xq/algorithms/nist/nist_decrypt.h>
 

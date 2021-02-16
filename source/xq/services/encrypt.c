@@ -109,6 +109,7 @@ _Bool xq_encrypt_and_store_token(
                                  const char* recipients,
                                  int hours_to_expiration,
                                  _Bool delete_on_read,
+                                 struct xq_metadata* metadata,
                                  struct xq_message_payload* result,
                                  struct xq_error_info* error   ) {
     
@@ -123,12 +124,11 @@ _Bool xq_encrypt_and_store_token(
         (int) strlen(int_payload.token_or_key),
         recipients,
         hours_to_expiration, // expire in 2 hours
-        delete_on_read, // delete on read
-        "msg"
+        delete_on_read // delete on read
     };
     
     struct xq_message_token message_token = { 0,0 };
-    _Bool success = xq_svc_store_key(config, &request, &message_token, error);
+    _Bool success = xq_svc_store_key(config, &request, metadata, &message_token, error);
     if (!success) {
         free(int_payload.data);
         if (int_payload.token_or_key) free(int_payload.token_or_key);

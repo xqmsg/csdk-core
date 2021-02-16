@@ -158,6 +158,10 @@ The most straightforward way to encrypt a mesage is by using the `xq_encrypt_and
 const char* message = "Hello World";
 const char* recipients = "john@email.com,jane@email.com";
 
+// The metadata be used to identify this communication on the dashboard.
+// This may also be created without heap allocation via xq_use_metadata.
+struct xq_metadata meta = xq_new_email_metadata("Hello!");
+
 struct xq_message_payload result = { 0,0 };
 
 if (!xq_encrypt_and_store_token( 
@@ -169,9 +173,12 @@ if (!xq_encrypt_and_store_token(
 	recipients, // The accounts that will be able to read this message.
 	24, // The number of hours this message will be available
 	0, // Prevent this message from being read more than once?
+  &meta, // The message metadata. 
 	&result,
 	&err)) {
 		fprintf(stderr, "%li, %s", err.responseCode, err.content );
+ 		// Since our metadata was allocated on the heap, we will need to destroy it.
+  	xq_destroy_metadata(&meta);
 		exit(EXIT_FAILURE);
 	}
 
@@ -186,6 +193,7 @@ printf("Encrypted Message ( Base64 ):%s\n", encoded.data );
 printf("Token: %s\n", result.token_or_key);
 
 // Cleanup
+xq_destroy_metadata(&meta);
 xq_destroy_payload(&encoded);
 xq_destroy_payload(&result);
 ```

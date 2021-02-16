@@ -18,9 +18,61 @@
 #include <xq/services/sub/packet.h>
 
 
+struct xq_metadata xq_new_email_metadata( const char* subject ) {
+    
+    int subject_len = strlen(subject);
+    int len = 15 + subject_len;
+    char* buf = malloc(len);
+    struct jWriteControl jwc;
+    jwOpen(&jwc, buf, len, JW_OBJECT);
+    jwObj_string_max(&jwc, "subject", (char*) subject, subject_len);
+    jwClose(&jwc);
+
+    return (struct xq_metadata) {.type=2, .length=strlen(buf), .data=buf };
+}
+
+
+struct xq_metadata xq_new_file_metadata( const char* filename,
+                           const char* mimeType,
+                           long filesize) {
+    
+    int name_len = strlen(filename);
+    int mime_len = strlen(mimeType);
+    int len = 30 + name_len + mime_len;
+    char* buf = malloc(len);
+    
+    struct jWriteControl jwc;
+    jwOpen(&jwc, buf, len, JW_OBJECT);
+    jwObj_string_max(&jwc, "title", (char*) filename, name_len);
+    jwObj_string_max(&jwc, "type", (char*) mimeType, mime_len);
+    jwObj_int(&jwc, "size", filesize );
+    jwClose(&jwc);
+
+    return (struct xq_metadata) {.type=1, .length=strlen(buf), .data=buf };
+    
+}
+
+struct xq_metadata xq_use_metadata( enum metadata_type type,  const char* content ) {
+    return (struct xq_metadata) {.type=type, .length=strlen(content), .data=(char*)content };
+}
+
+
+void xq_destroy_metadata(struct xq_metadata* metadata) {
+    
+    if (metadata){
+        if (metadata->data ) {
+            free(metadata->data);
+        }
+        metadata->data = 0;
+        metadata->length = 0;
+    }
+}
+
+
 _Bool xq_svc_store_key(
                       struct xq_config* config,
                       struct xq_message_token_request* request,
+                      struct xq_metadata* metadata,
                       struct xq_message_token* result,
                       struct xq_error_info* error  ) {
     
@@ -40,10 +92,9 @@ _Bool xq_svc_store_key(
         return 0;
     }
     
+    
     // Next we need to calculate how much space we need for this request.
-    int len = 70 + request->key_len;
-    int idx = 0;
-    if (request->type_tag) len += (int) strlen(request->type_tag);
+    int len = 80 + request->key_len + ((metadata) ? metadata->length : 0);
     len += strlen(request->recipients);
     char* buf = malloc(  len + 3  );
     struct jWriteControl jwc;
@@ -51,10 +102,11 @@ _Bool xq_svc_store_key(
     jwObj_string_max(&jwc, "key", request->key, request->key_len );
     jwObj_bool(&jwc, "dor", request->delete_on_read );
     jwObj_int(&jwc, "expires", request->expiration );
-    if (request->type_tag) jwObj_string(&jwc, "type", (char*)request->type_tag );
     jwObj_string(&jwc, "recipients", (char*) request->recipients );
-
-  //  jwEnd(&jwc);
+    jwObj_int(&jwc, "type", (metadata) ? metadata->type : Metadata_Generic );
+    if (metadata) {
+        jwObj_raw(&jwc, "meta", metadata->data);
+    }
     jwClose(&jwc);
     
     struct xq_response sub_response = xq_call( config, Server_Sub, CallMethod_Post, "packet", buf , 1,  0 );
