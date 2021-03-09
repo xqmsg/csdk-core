@@ -34,7 +34,6 @@ _Bool xq_aes_encrypt(
     }
     
     
-    EVP_CIPHER_CTX_set_padding(en, AES_PADDING);
 
     
     /* 8 bytes to salt the key_data during key generation. This is an example of
@@ -55,6 +54,12 @@ _Bool xq_aes_encrypt(
     int key_data_len = (int)strlen(key);
     int len = (int) data_len + AES_BLOCK_SIZE;
     unsigned char gen_key[32] = {0}, gen_iv[32] = {0};
+    int padding = (!compat)? AES_PADDING : 0;
+    
+    if (!compat) {
+        EVP_CIPHER_CTX_set_padding(en, AES_PADDING);
+    }
+
     
     /*
      * Gen key & IV for AES 256 CBC mode. A SHA1 digest is used to hash the supplied key material.
@@ -82,7 +87,7 @@ _Bool xq_aes_encrypt(
     int max_buf_len = (((len + 16)/16) * 16);
     len = 0;
      
-    result->data = calloc( 1, max_buf_len + 16 + AES_PADDING );
+    result->data = calloc( 1, max_buf_len + 16 + padding );
     uint8_t* pos = result->data + 16;
     
     /* update ciphertext, c_len is filled with the length of ciphertext generated,
@@ -97,7 +102,7 @@ _Bool xq_aes_encrypt(
     
     int f_len = 0;
     
-    if(AES_PADDING > 0 && !EVP_EncryptFinal_ex(en,  pos + c_len,   &f_len)){
+    if(padding > 0 && !EVP_EncryptFinal_ex(en,  pos + c_len,   &f_len)){
         ERR_print_errors_fp(stderr);
         EVP_CIPHER_CTX_free(en);
         return -1;

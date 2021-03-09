@@ -11,7 +11,7 @@
 /// Decrypts the provided data using the specified AES algorithm.  The type of algorithm to use will be automatically detected from the secret key prefix ( either ".A" for normal, or ".D" for strong ).
 ///  If no prefix is detected, it will attempt to decrypt using Algorithm_AES.
 ///
-/// @param data The data to encrypt.
+/// @param data The data to decrypt.
 /// @param data_len The number of bytes of data.
 /// @param key The secret encryption key.
 /// @param result A reference to the message block where the decryption result will be stored.

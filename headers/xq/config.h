@@ -73,6 +73,7 @@ struct xq_config
     _Bool support_threads;
     char* access_token;
     char* exchange_token;
+    char* dashboard_token;
 };
 
 /// The different types of supported metadata. This affects the data that will be logged to the XQ dashboard.
@@ -110,6 +111,11 @@ char* xq_strcat( char* tail, char* src, int maxBuf );
 /// @param token The access token.
 _Bool xq_set_access_token(struct xq_config* config, const char* token );
 
+/// Set the dashboard access token for the provided configuration.
+/// @param config The XQ configuration object
+/// @param token The access token.
+_Bool xq_set_dashboard_token(struct xq_config* config, const char* token );
+
 
 /// Fetches the value of the current access token for the provided configuration object.
 /// @param config The XQ configuration object.
@@ -133,5 +139,10 @@ char *xq_escape(char *str) ;
 /// @param error The object to be filled with the error information.
 _Bool xq_fill_error(struct xq_response* response, struct xq_error_info* error);
 
+// function to reverse buffer[i..j]
+char* reverse(char *buffer, int i, int j);
+
+// Iterative function to implement itoa() function in C
+char* itoa(int value, char* buffer, int base);
 
 #endif /* config_h */

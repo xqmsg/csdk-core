@@ -97,8 +97,7 @@ _Bool testEncryption(struct xq_config *cfg, const char* recipients, const char* 
 
 
 int main(int argc, const char * argv[]) {
-    
-    
+        
     // 1. SDK Initialization
     const char *config_file = argc > 1 ? argv[1] : "xq.ini";
     struct xq_config cfg = xq_init( config_file );
@@ -115,9 +114,26 @@ int main(int argc, const char * argv[]) {
     // 3. Authenticate a user.
     const char* email_address = argv[2];
     
+
+    // Test a trusted destination:
+    // To test this block, enter a valid secure key for a trusted domain, along with the workspace ID.
+    /*
+    const char* secure_key = "YOUR_TRUSTED_RANGE_SECURE_KEY";
+    if  (!xq_svc_authorize_trusted( &cfg, email_address, TEAM_ID, secure_key, "YOUR_DEVICE_NAME", &err )) {
+        fprintf(stderr, "[xq_svc_authorize_trusted] %li : %s\n", err.responseCode, err.content );
+        xq_destroy_config(&cfg);
+        exit(EXIT_FAILURE);
+    }
+    printf( "Trusted Account Authorized\n" );
+    */
+
+    
+    
+    
+    
     // If a real email address was set.
     if  (!xq_svc_authorize_alias( &cfg, email_address, &err )) {
-        fprintf(stderr, "[xq_svc_authorize_alias] %li : %s", err.responseCode, err.content );
+        fprintf(stderr, "[xq_svc_authorize_alias] %li : %s\n", err.responseCode, err.content );
         xq_destroy_config(&cfg);
         exit(EXIT_FAILURE);
     }
@@ -163,6 +179,8 @@ int main(int argc, const char * argv[]) {
     res = testEncryption( &cfg, info.mailOrPhone, message, Algorithm_AES_Strong );
     printf("AES Encryption (SHA 512, 100K Rounds): %s.\n", res ? "OK" : "Failed" );
     
+    
+
     // Cleanup
     xq_destroy_config(&cfg);
     

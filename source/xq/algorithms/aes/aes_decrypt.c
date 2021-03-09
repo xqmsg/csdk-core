@@ -21,12 +21,14 @@
 
 
 
-static inline unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, size_t *len)
+static inline unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, size_t *len, _Bool compat)
 {
     /* plaintext will always be equal to or lesser than length of ciphertext*/
     int p_len = 0, f_len = 0;
     unsigned char *plaintext = malloc(*len);
-    EVP_CIPHER_CTX_set_padding(e, AES_PADDING);
+    if (!compat){
+        EVP_CIPHER_CTX_set_padding(e, AES_PADDING);
+    }
     if (!EVP_DecryptUpdate(e, plaintext, &p_len, ciphertext, (int) *len )) {
         ERR_print_errors_fp(stderr);
         *len = 0;
@@ -35,7 +37,7 @@ static inline unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphe
     }
     
 
-    if (AES_PADDING > 0 && !EVP_DecryptFinal_ex(e, plaintext+p_len, &f_len)) {
+    if (!compat && AES_PADDING > 0 && !EVP_DecryptFinal_ex(e, plaintext+p_len, &f_len)) {
         ERR_print_errors_fp(stderr);
         *len = 0;
         free(plaintext);
@@ -88,6 +90,7 @@ _Bool xq_aes_decrypt(
     unsigned char gen_key[32]={0}, gen_iv[32]={0};
     
     
+    
     /*
      * Gen key & IV for AES 256 CBC mode. A SHA1 digest is used to hash the supplied key material.
      * nrounds is the number of times the we hash the material. More rounds are more secure but
@@ -104,8 +107,8 @@ _Bool xq_aes_decrypt(
     int iv_len = (int)strlen((char*)gen_iv);
 
     if (EVP_DecryptInit_ex(de, EVP_aes_256_cbc(), NULL, gen_key, gen_iv)){
-        result->data = (uint8_t *)aes_decrypt(de, needle, &len );
-        result->length = (int) len - AES_PADDING;
+        result->data = (uint8_t *)aes_decrypt(de, needle, &len, compat );
+        result->length = (int) len - ((!compat) ? 0 : AES_PADDING);
     }
     else {
         ERR_print_errors_fp(stderr);

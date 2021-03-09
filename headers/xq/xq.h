@@ -17,6 +17,7 @@
 #include <ext/http-codes/http-codes.h>
 #include <xq/services/sub/authorize.h>
 #include <xq/services/sub/authorize_alias.h>
+#include <xq/services/sub/authorize_trusted.h>
 #include <xq/services/sub/code_validation.h>
 #include <xq/services/sub/settings.h>
 #include <xq/services/sub/subscriber.h>

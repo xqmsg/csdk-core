@@ -210,10 +210,6 @@ struct xq_response xq_call(
         }
     }
     
-    
-    //fprintf(stderr, "Destination: %s\n", url);
-    //if (payload != 0 ) fprintf(stderr, "Payload: %s\n", payload);
-    
 
     // Set the target URL
     code = curl_easy_setopt(curl, CURLOPT_URL, url );
@@ -227,7 +223,7 @@ struct xq_response xq_call(
     if ( server == Server_Saas && config->dashboard_api_key ) {
         headers = curl_slist_append(headers, config->dashboard_api_key );
         if (headers == NULL) {
-            fprintf(stderr, "Failed to assign dashboard key.");
+            fprintf(stderr, "Failed to assign dashboard API key.");
             return response;
         }
     }
@@ -236,19 +232,30 @@ struct xq_response xq_call(
     else if (config->xq_api_key) {
         headers = curl_slist_append(headers, config->xq_api_key );
         if (headers == NULL) {
-            fprintf(stderr, "Failed to assign dashboard key.");
+            fprintf(stderr, "Failed to assign XQ API key.");
             return response;
         }
     }
     
-    if (withToken && config->access_token) {
-        headers = curl_slist_append(headers, config->access_token );
-        if (headers == NULL) {
-            fprintf(stderr, "Failed to assign dashboard key.");
-            return response;
+    if (withToken) {
+        if ( server == Server_Saas ) {
+            if (config->dashboard_token) {
+                headers = curl_slist_append(headers, config->dashboard_token );
+                if (headers == NULL) {
+                    fprintf(stderr, "Failed to assign dashboard token.");
+                    return response;
+                }
+            }
+        }
+        else if (config->access_token) {
+            headers = curl_slist_append(headers, config->access_token );
+            if (headers == NULL) {
+                fprintf(stderr, "Failed to assign XQ token.");
+                return response;
+            }
         }
     }
-    
+
     /* set our set of headers */
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
