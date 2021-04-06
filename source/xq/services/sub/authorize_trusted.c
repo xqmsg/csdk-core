@@ -14,7 +14,6 @@
 
 _Bool xq_svc_authorize_trusted(
                                struct xq_config* config,
-                               const char* email_or_phone,
                                int team_id,
                                const char* security_key,
                                const char* device_name,
@@ -28,13 +27,36 @@ _Bool xq_svc_authorize_trusted(
         return 0;
     }
     
+    if ( !device_name ) {
+        if (error){
+            xq_strcat(error->content, "A valid device name must be provided." , MAX_ERROR_LENGTH);
+            error->responseCode = -1;
+        }
+        return 0;
+    }
+    
+    if (strlen(device_name) > 48 ) {
+        if (error){
+            xq_strcat(error->content, "Device name must be less than 48 characters" , MAX_ERROR_LENGTH);
+            error->responseCode = -1;
+        }
+        return 0;
+    }
 
     // Create the request path.
     char path[24] = {0};
     char* tail = xq_strcat( path, "authorize/trusted/", 24 );
     itoa(team_id, tail, 6);
 
-    struct xq_response response = xq_call( config, Server_Sub, CallMethod_Post, path, "" , 1,  0 );
+    // Next we need to calculate how much space we need for this request.
+    char buf[60] = {0};
+    struct jWriteControl jwc;
+    jwOpen(&jwc, buf, 60, JW_OBJECT);
+    jwObj_string(&jwc, "device", (char*) device_name );
+    jwClose(&jwc);
+    
+
+    struct xq_response response = xq_call( config, Server_Sub, CallMethod_Post, path, buf , 1,  0 );
     
     // Ensure the authorization JSON was written properly.
     if ( response.success ) {
