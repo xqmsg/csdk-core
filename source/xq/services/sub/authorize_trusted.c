@@ -78,10 +78,13 @@ _Bool xq_svc_authorize_trusted(
 
         if (!xq_aes_decrypt(decoded_base64, decoded_len, key, &result, error)) {
             // If the decryption failed, abort immediately.
+            free(decoded_base64);
             xq_destroy_payload(&result);
             xq_destroy_response(&response);
             return 0;
         }
+        
+        free(decoded_base64);
 
         struct xq_message_payload pl = {0,0};
 
