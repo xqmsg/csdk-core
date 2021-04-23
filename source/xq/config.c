@@ -116,7 +116,7 @@ static int _ini_handler(void* user, const char* section, const char* name,
     else if (MATCH("Connections", "Saas"))  pconfig->saas_url = strdup(value);
     else if (MATCH("Connections", "Quantum"))  pconfig->quantum_url = strdup(value);
     else if (MATCH("ApiKeys", "XQ"))  {
-        pconfig->xq_api_key = calloc(strlen(value) + strlen(APIKEY_TAG), 1 );
+        pconfig->xq_api_key = calloc(strlen(value) + strlen(APIKEY_TAG) + 1, 1 );
         char* tail = xq_strcat(pconfig->xq_api_key, APIKEY_TAG , 0);
         xq_strcat( tail, (char*)value,  0);
     }
