@@ -91,7 +91,7 @@ _Bool set_exchange_token(struct xq_config* config, const char* token, int len ) 
     
     if (token) {
         if (len == 0 ) len = (int) strlen(token);
-        config->exchange_token = calloc( len + BEARER_TAG_LEN, 1  );
+        config->exchange_token = calloc( len + BEARER_TAG_LEN + 1, 1  );
         xq_strcat( xq_strcat(config->exchange_token, BEARER_TAG, BEARER_TAG_LEN ) , (char*) token, len );
     }
 
@@ -121,7 +121,7 @@ static int _ini_handler(void* user, const char* section, const char* name,
         xq_strcat( tail, (char*)value,  0);
     }
     else if (MATCH("ApiKeys", "Dashboard")) {
-        pconfig->dashboard_api_key = calloc(strlen(value) + strlen(APIKEY_TAG), 1 );
+        pconfig->dashboard_api_key = calloc(strlen(value) + strlen(APIKEY_TAG) + 1, 1 );
         char* tail = xq_strcat(pconfig->dashboard_api_key, APIKEY_TAG , 0);
         xq_strcat( tail, (char*)value, 0);
     }
