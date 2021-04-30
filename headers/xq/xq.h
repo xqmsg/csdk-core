@@ -36,5 +36,8 @@
 #include <xq/services/sub/packet.h>
 #include <xq/services/val/expiration.h>
 #include <xq/services/val/key_access.h>
+#include <xq/services/dashboard/dashboard.h>
+#include <xq/services/dashboard/group.h>
+#include <xq/services/dashboard/contact.h>
 
 #endif /* xq_h */

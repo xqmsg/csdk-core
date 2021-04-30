@@ -86,6 +86,31 @@ enum metadata_type {
     Metadata_Email = 2,
 };
 
+/// The different dashboard user roles
+enum xq_business_role {
+    role_admin = 1,
+    
+
+    /// Can login to dashboard with restricted permissions ( cannot add other users ).
+    role_user = 2,
+
+    /// Cannot login to dashboard.
+    role_customer = 3,
+
+    /// Cannot login to dashboard.
+    role_vendor = 4,
+
+    /// Can do everything on an account, including billing.
+    role_superuser = 5,
+
+    /// A virtual user is a generated email address that is fully tracked, but cannot be used to log into the dashboard at all.
+    role_device = 6,
+
+    /// An Alias role is similar is an anoymous alias that is trackable by an SMB.
+    role_alias = 7
+};
+
+
 /// A data structure containing metadata about the key packet that will be available on the users XQ dashboard.
 struct xq_metadata {
     /// The metadata type. 1 = File, 2 = Email, 0 = Generic / Other

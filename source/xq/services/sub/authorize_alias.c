@@ -14,14 +14,14 @@
 #include <xq/services/sub/authorize_alias.h>
 
 
-_Bool xq_svc_authorize_alias(struct xq_config* config, const char* email, struct xq_error_info* error ) {
+_Bool xq_svc_authorize_alias(struct xq_config* config, const char* identifier, struct xq_error_info* error ) {
     
     // Write the email into a json payload.
     char buf[STATUS_BUFFER_SIZE] = {0};
     
     struct jWriteControl jwc;
     jwOpen(&jwc, buf, STATUS_BUFFER_SIZE, JW_OBJECT);
-    jwObj_string(&jwc, "user", (char*) email);
+    jwObj_string(&jwc, "user", (char*) identifier);
     jwClose(&jwc);
     
     struct xq_response response = xq_call( config, Server_Sub, CallMethod_Post, "authorizealias", buf , 1, 0 );

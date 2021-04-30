@@ -11,13 +11,13 @@
 /// Enumeration of notification receipt types.
 enum xq_notification_level {
     /// The user will not receive any usage emails or tutorials.
-    DoNotReceive = 0,
+    no_notifications = 0,
     /// The user will only receive emails related to their usage.
-    ReceiveUsage = 1,
+    usage_notifications = 1,
     /// The user will only receive tutorial emails on how to use XQ.
-    ReceiveTutorials = 2,
+    tutorial_notifications = 2,
     /// The user will receive all notifications.
-    ReceiveAll = 3
+    all_notifications = 3
 };
 
 
@@ -25,10 +25,10 @@ enum xq_notification_level {
 /// @param level Thei integer to test.
 static inline _Bool is_valid_notification(int level) {
     switch ( level ) {
-        case DoNotReceive:
-        case ReceiveUsage:
-        case ReceiveTutorials:
-        case ReceiveAll:
+        case no_notifications:
+        case usage_notifications:
+        case tutorial_notifications:
+        case all_notifications:
             return 1;
         default:
             return 0;
