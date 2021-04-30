@@ -19,7 +19,7 @@ This is the XQ SDK for native applications and embedded devices.
 - cmake: `brew install cmake`
 - OpenSSL 1.1: `brew install openssl@1.1`
 
-	In order to run tests, macOS users may also need to update the OpenSSL path in the `CMakeList.txt` file (currently set `1.1.1i` ) to match their installed version.
+	In order to run tests, macOS users may also need to update the OpenSSL path in the `CMakeList.txt` file (currently set `1.1.1k` ) to match their installed version.
 
 2. You will need to add your XQ API key to the `xq.ini` file in the `config` folder. [Visit your dashboard](https://manage.xqmsg.com) to generate new keys.
 3. Build the XQ library itself:
@@ -266,11 +266,137 @@ Access to an entire message can also be revoked. When this occurs, both the send
 ```c
 
 struct xq_error_info err;
-struct xq_message_payload result = { 0,0 };
+
 if (!xq_svc_remove_key(cfg, token, &err)) {
   fprintf(stderr, "%li, %s", err.responseCode, err.content );
   exit(EXIT_FAILURE);
 }
-xq_destroy_payload(&result);
 
 ```
+
+### Connecting to the Dashboard
+The SDK provides limited functionality for dashboard administration. Before using any dashboard-specific features, a user would perform the following **after** signing into XQ with an authorized email account associated with the management portal:
+
+```c
+
+struct xq_error_info err;
+
+// The ID of the dashboard team.
+// The authenticated email account must be associated with this team.
+long team_id = 1; 
+
+if (!xq_connect_dashboard(&cfg, team_id, &err)) {
+            fprintf(stderr, "%li : %s\n", err.responseCode, err.content );
+            xq_destroy_config(&cfg);
+            exit(EXIT_FAILURE);
+        }
+
+// Success - The dashboard account is authorized.
+```
+
+### Admin: Managing a User Group
+Users may group a number of emails accounts under a single alias. Doing this makes it possible to add all of the associated email accounts to an outgoing message by adding that alias as a message recipient instead. Note that changing the group members does not affect the access rights of messages that have previously been sent.
+
+```c
+
+
+struct xq_error_info err;
+
+// Creating the group
+char* emails_in_group = { "test1@email.com", "test2@email.com" };
+struct xq_user_group new_group = {
+                0, // Group ID will be not be used here,
+                "My List", // An alias for identifying this group on the dashboard
+                emails_in_group,  // The list of email addresses to add
+                2 // The number of emails in the group
+            };
+
+long group_id = xq_add_user_group(&cfg, &new_group, &err);
+
+if (group_id == 0 ){
+	fprintf(stderr, "%li : %s\n", err.responseCode, err.content );
+	exit(EXIT_FAILURE);
+}
+
+// Success - Adding the recipient <group_id>@group.local will now make all of the group members valid recipients of the message.
+
+```
+
+### Admin: Creating a Dashboard Contact 
+The SDK allows a user to create an additional contact on their dashboard, provided their role on the dashboard allows them to do so. All roles besides **Device** and **Alias** will require the the contact to accept an invitation before they will be fully trackable: 
+
+```c
+
+struct xq_error_info err;
+
+// Attempt to create a contact.
+const char* mail = "john@email.com";
+long contact_id = xq_add_contact(
+	&cfg, 
+	mail,  // User Identifier
+	"John", // First Name 
+	"Doe",  // Last Name
+	"Employee",  // Title
+	role_user,  // Business Role
+	all_notifications,  // Notification Level
+	&err
+	);
+        
+// A zero contact ID means the request failed.
+if ( contact_id == 0 ) {
+	fprintf(stderr, "[xq_add_ext_contact] %li : %s\n", err.responseCode, err.content );
+	exit(EXIT_FAILURE);
+}
+
+// Success - the dashboard contact was created.
+
+```
+
+### Admin: Using an external ID-based contact for tracking
+In situations where a user may want to associate an external account with an XQ account for the purposes of encryption and tracking , they can choose to create an account with an **Alias** role.
+
+These type of accounts will allow user authorization using only an account ID. However, these accounts have similar restrictions to anonymous accounts: They will be incapable of account management, and also have no access to the dashboard. However - unlike basic anonymous accounts - they can be fully tracked in a dashboard portal.
+```c
+
+struct xq_error_info err;
+
+const char* external_id = "1000101";
+
+long contact_id = xq_add_contact(
+	&cfg, 
+	external_id, 
+	"John", 
+	"Doe", 
+	"External", 
+	role_alias, // Make sure to set the Alias role 
+	no_notifications,  // Aliases cannot receive notifications.
+	&err
+	);
+        
+if ( contact_id == 0 ) {
+	fprintf(stderr, "[xq_add_ext_contact] %li : %s\n", err.responseCode, err.content );
+	exit(EXIT_FAILURE);
+}
+
+// Success - the dashboard contact was created.
+```
+
+Afterwards, if a user signs in with that external ID via **authorize_alias**, their activity can be fully tracked on the dashboard:
+
+```c
+
+// Sign in using the external ID as the alias.
+
+struct xq_error_info err;
+
+const char* external_id = "1000101";
+if  (!xq_svc_authorize_alias( &cfg, external_id, &err )) {
+	fprintf(stderr, "[xq_svc_authorize_alias] %li : %s", err.responseCode, err.content );
+            xq_destroy_config(&cfg);
+            exit(EXIT_FAILURE);
+}
+
+// Success - This user now has a restricted access token capable of encryption and decryption. Any actions performed will be logged on the associated dashboard.
+        
+```
+
