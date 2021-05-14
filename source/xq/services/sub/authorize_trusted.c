@@ -46,7 +46,7 @@ _Bool xq_svc_authorize_trusted(
     // Create the request path.
     char path[24] = {0};
     char* tail = xq_strcat( path, "authorize/trusted/", 24 );
-    itoa(team_id, tail, 6);
+    itoa(team_id, tail, 10);
 
     // Next we need to calculate how much space we need for this request.
     char buf[60] = {0};
