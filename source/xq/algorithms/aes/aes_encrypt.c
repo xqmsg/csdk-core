@@ -87,7 +87,9 @@ _Bool xq_aes_encrypt(
     int max_buf_len = (((len + 16)/16) * 16);
     len = 0;
      
-    result->data = calloc( 1, max_buf_len + 16 + padding + 1 );
+    if ( result->data == 0 ) {
+        result->data = calloc( 1, max_buf_len + 16 + padding + 1 );
+    }
     uint8_t* pos = result->data + 16;
     
     /* update ciphertext, c_len is filled with the length of ciphertext generated,

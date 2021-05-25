@@ -98,6 +98,11 @@ _Bool testEncryption(struct xq_config *cfg, const char* recipients, const char* 
 
 int main(int argc, const char * argv[]) {
         
+    if ( argc < 3 ) {
+        fprintf(stderr, "Usage: test CONFIG_FILE_INI USER_ALIAS\n");
+        exit(EXIT_FAILURE);
+    }
+    
     // 1. SDK Initialization
     const char *config_file = argc > 1 ? argv[1] : "xq.ini";
     struct xq_config cfg = xq_init( config_file );

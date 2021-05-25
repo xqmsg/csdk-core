@@ -20,35 +20,6 @@
 #include <xq/algorithms/aes/aes_encrypt.h>
 
 
-
-static inline unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, size_t *len, _Bool compat)
-{
-    /* plaintext will always be equal to or lesser than length of ciphertext*/
-    int p_len = 0, f_len = 0;
-    unsigned char *plaintext = malloc(*len);
-    if (!compat){
-        EVP_CIPHER_CTX_set_padding(e, AES_PADDING);
-    }
-    if (!EVP_DecryptUpdate(e, plaintext, &p_len, ciphertext, (int) *len )) {
-        ERR_print_errors_fp(stderr);
-        *len = 0;
-        free(plaintext);
-        return 0;
-    }
-    
-
-    if (!compat && AES_PADDING > 0 && !EVP_DecryptFinal_ex(e, plaintext+p_len, &f_len)) {
-        ERR_print_errors_fp(stderr);
-        *len = 0;
-        free(plaintext);
-        return 0;
-    }
-    
-    *len = p_len + f_len;
-    return plaintext;
-}
-
-
 _Bool xq_aes_decrypt(
                      uint8_t* data, size_t data_len,
                      char* key,
@@ -107,8 +78,31 @@ _Bool xq_aes_decrypt(
     int iv_len = (int)strlen((char*)gen_iv);
 
     if (EVP_DecryptInit_ex(de, EVP_aes_256_cbc(), NULL, gen_key, gen_iv)){
-        result->data = (uint8_t *)aes_decrypt(de, needle, &len, compat );
-        result->length = (int) len - ((!compat) ? 0 : AES_PADDING);
+
+        /* plaintext will always be equal to or lesser than length of ciphertext*/
+        _Bool nullmem = result->data == 0;
+        int p_len = 0, f_len = 0;
+        if (nullmem) result->data = malloc(len);
+        if (!compat){
+            EVP_CIPHER_CTX_set_padding(de, AES_PADDING);
+        }
+        if (!EVP_DecryptUpdate(de, result->data, &p_len, needle, len )) {
+            ERR_print_errors_fp(stderr);
+            result->length = 0;
+            if (nullmem) free(result->data);
+            return 0;
+        }
+        
+        if (!compat && AES_PADDING > 0 && !EVP_DecryptFinal_ex(de, result->data+p_len, &f_len)) {
+            ERR_print_errors_fp(stderr);
+            result->length = 0;
+            if (nullmem) free(result->data);
+            return 0;
+        }
+        
+        result->length = p_len + f_len;
+
+        
     }
     else {
         ERR_print_errors_fp(stderr);
