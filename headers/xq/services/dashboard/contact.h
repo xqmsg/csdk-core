@@ -32,7 +32,7 @@ long xq_add_contact( struct xq_config* config,
 /// Removes a previously addded external contact.
 ///
 /// @param config The XQ configuration instance.
-/// @param team_id The numerical ID of the team to connect to. If set to zero, a random dashboard will be set.
+/// @param internal_contact_id The numerical ID of the team to connect to. If set to zero, a random dashboard will be set.
 /// @param error An optional, user-provided block  to store details of any error that occurs.
 _Bool xq_remove_contact( struct xq_config* config,
                         long internal_contact_id,
@@ -42,7 +42,7 @@ _Bool xq_remove_contact( struct xq_config* config,
 /// Disables a previously addded external contact.
 ///
 /// @param config The XQ configuration instance.
-/// @param team_id The numerical ID of the team to connect to. If set to zero, a random dashboard will be set.
+/// @param internal_contact_id The numerical ID of the team to connect to. If set to zero, a random dashboard will be set.
 /// @param error An optional, user-provided block  to store details of any error that occurs.
 _Bool xq_disable_contact( struct xq_config* config,
                         long internal_contact_id,

@@ -102,7 +102,6 @@ _Bool xq_encrypt(   struct xq_config* config,
 /// @param entropy_size The amount of quantum entropy to use for the key.
 /// @param pool  An optional quantum pool to use  for entropy.
 /// @param recipients A list of the recipients.
-/// @param recipients_len The number of recipients.
 /// @param hours_to_expiration The number of hours before this message should expire.
 /// @param delete_on_read Should this message be deleted after it is read?
 /// @param metadata Optional metadata related to the content being encrypted. File and Email metadata will be viewable as communications on the users dashboard.
