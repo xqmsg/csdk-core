@@ -133,8 +133,6 @@ static int _ini_handler(void* user, const char* section, const char* name,
 
 struct xq_config xq_init(const char* configPath) {
     
-   //curl_global_init( CURL_GLOBAL_DEFAULT );
-    
     struct xq_config new_config = empty_conf;
     
     if (ini_parse(configPath, _ini_handler, &new_config ) < 0 ) {

@@ -268,7 +268,7 @@ struct xq_response xq_call(
     }
     
     
-    code = curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method_str );
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method_str );
     
     
     // If any files are specified, add it here.
@@ -306,6 +306,11 @@ struct xq_response xq_call(
     
     if (code != CURLE_OK) {
         response.success = 0;
+        //fprintf(stderr, "Connection failed with error code: %i", code );
+        response.size = 50;
+        response.content = calloc(response.size, 1);
+        snprintf((char*)response.content, 100, "Connection failed with error code: %i", code);
+        
     }
     
     else {

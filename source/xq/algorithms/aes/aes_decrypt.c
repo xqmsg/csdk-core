@@ -74,9 +74,6 @@ _Bool xq_aes_decrypt(
         return -1;
     }
     
-    int gen_key_len = (int)strlen((char*)gen_key);
-    int iv_len = (int)strlen((char*)gen_iv);
-
     if (EVP_DecryptInit_ex(de, EVP_aes_256_cbc(), NULL, gen_key, gen_iv)){
 
         /* plaintext will always be equal to or lesser than length of ciphertext*/

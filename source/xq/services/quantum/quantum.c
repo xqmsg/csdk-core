@@ -42,7 +42,7 @@ void xq_destroy_pool(struct xq_quantum_pool* pool ) {
 static void* refill_pool(void* args) {
     
     // If the pool is already being refilled, ignore.
-    int rc = pthread_mutex_trylock(&_quantum_refill_thread.pool_lock);
+    pthread_mutex_trylock(&_quantum_refill_thread.pool_lock);
     
     struct quantum_refill_thread* params = (struct quantum_refill_thread*) args;
     
@@ -56,7 +56,7 @@ static void* refill_pool(void* args) {
         params->pool->used[ fill_index ] = 0;
         
     }
-    rc = pthread_mutex_unlock(&_quantum_refill_thread.pool_lock);
+    pthread_mutex_unlock(&_quantum_refill_thread.pool_lock);
     
     return 0;
 }
@@ -200,13 +200,18 @@ _Bool xq_svc_quantum(struct xq_config* config,  struct xq_quantum_key* key_out, 
         if (key_out->length != response.size ) {
             xq_strcat(error->content, (char*) response.content , MAX_ERROR_LENGTH);
             response.success = 0;
-            error->responseCode = -1;
+            if (error) error->responseCode = -1;
         }
         else {
             if (key_out->data == 0) key_out->data = malloc(response.size);
             memccpy(key_out->data, response.content,'\0',response.size );
         }
     }
+    
+    else if (response.content) {
+        xq_strcat(error->content, (char*) response.content , MAX_ERROR_LENGTH);
+    }
+    
     
     xq_destroy_response(&response);
     return response.success;

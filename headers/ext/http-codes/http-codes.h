@@ -120,6 +120,8 @@ static char HttpStatus_isError(int code)         { return (code >= 400); }
  * \return The standard HTTP reason phrase for the given \p code or \c NULL if no standard
  * phrase for the given \p code is known.
  */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused"
 static const char* httpStatus(int code)
 {
     switch (code)
@@ -199,8 +201,9 @@ static const char* httpStatus(int code)
             
         default: return 0;
     }
-    
 }
+
+#pragma clang diagnostic pop
 
 
 #endif /* HTTPSTATUSCODES_C_H_ */

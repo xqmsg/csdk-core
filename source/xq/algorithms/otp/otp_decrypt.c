@@ -54,7 +54,6 @@ _Bool xq_otp_decrypt(
         k_idx = key_offset  + (m_idx % key_length);
         result->data[m_idx] = ((uint8_t)data[m_idx]) ^ ((uint8_t)key[k_idx]);
     } while (++m_idx < data_len );
-    result->data[m_idx] = '\0';
     result->length = m_idx;
     return 1;
     

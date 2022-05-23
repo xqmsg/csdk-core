@@ -330,13 +330,10 @@ char * jRead_atof( char *p, double *result)
 char *jRead_strcpy( char *destBuffer, int destLength, struct jReadElement *pElement )
 {
 	int i;
-	int len= pElement->bytelen;
 	char *pdest= destBuffer;
 	char *psrc= (char *)pElement->pValue;
 	if( pElement->error == 0 )
 	{
-		if( len >= destLength )
-			len= destLength;
 		for( i=0; i<destLength; i++ )
 			*pdest++= *psrc++;
 	}

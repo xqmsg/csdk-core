@@ -124,7 +124,7 @@ int main(int argc, const char * argv[]) {
     // To test this block, enter a valid secure key for a trusted domain, along with the workspace ID.
     /*
     const char* secure_key = "YOUR_TRUSTED_RANGE_SECURE_KEY";
-    if  (!xq_svc_authorize_trusted( &cfg, email_address, TEAM_ID, secure_key, "YOUR_DEVICE_NAME", &err )) {
+    if  (!xq_svc_authorize_trusted( &cfg, email_address, "TEAM_ID", secure_key, "YOUR_DEVICE_NAME", &err )) {
         fprintf(stderr, "[xq_svc_authorize_trusted] %li : %s\n", err.responseCode, err.content );
         xq_destroy_config(&cfg);
         exit(EXIT_FAILURE);

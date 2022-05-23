@@ -19,9 +19,17 @@ _Bool xq_svc_authorize_trusted(
                                const char* device_name,
                                struct xq_error_info* error ) {
  
-    if (!config ){
+    if ( config == 0 ){
         if (error) {
             xq_strcat(error->content, "No config object has been set." , MAX_ERROR_LENGTH);
+            error->responseCode = -1;
+        }
+        return 0;
+    }
+    
+    if (security_key == 0) {
+        if (error) {
+            xq_strcat(error->content, "No security key has been provided." , MAX_ERROR_LENGTH);
             error->responseCode = -1;
         }
         return 0;
